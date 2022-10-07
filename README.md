@@ -15,7 +15,7 @@ This repository contains the source code for 'NeuroAssist: An Open-Source Tool f
 3. Dataset available at: https://dll.seecs.nust.edu.pk/downloads/
 
 # Dataset
-The NMT dataset v2.0 consists of labeled EEG data from the years 2018 to 2021. EEG waveforms are present in European Data Format (EDF) files. These are 19 channel EEG waveforms of patients from the Military Hospital (MH) sampled at a frequency of 200 Hz. Timestamps along with labels for the abnormalities are stored in Comma Seperated Value (CSV) files. There are a total of 956 Normal and 114 Abnormal EEG recordings.
+The NMT dataset v2.0 consists of labeled EEG data from the years 2018 to 2021. EEG waveforms are present in European Data Format (EDF) files. These are 19 channel EEG waveforms of patients from the Military Hospital (MH) sampled at a frequency of 200 Hz. Timestamps along with labels for the abnormalities are stored in Comma Seperated Value (CSV) files. There are a total of 962 Normal and 113 Abnormal EEG recordings.
 
 # Citation
 This repo was used to generate the results for the following paper on Pre-Diagnostic Screening of Abnormal EEG.
