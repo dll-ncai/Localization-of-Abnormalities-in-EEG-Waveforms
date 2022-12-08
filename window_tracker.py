@@ -3,10 +3,10 @@ import os
 
 random.seed(444)
 
-PATH = '/home/haziq/Desktop/Adil/Submissions/'
-train_path = PATH + 'dl_images/train/'
-test_path = PATH + 'dl_images/test/'
-valid_path = PATH + 'dl_images/valid/'
+PATH = '/home/haziq/Desktop/FYP_Group2/'
+train_path = PATH + 'images_dl/train/'
+test_path = PATH + 'images_dl/test/'
+valid_path = PATH + 'images_dl/valid/'
 
 save_path = PATH
 
