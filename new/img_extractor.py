@@ -177,41 +177,6 @@ for waveletType in waveletsTypes:
                 pool.starmap(imageExtraction, inputs)
 
 
-            # for i in tqdm(range(Epochs_data.shape[1])):
-            #     ts = time.time()
-            #     window = []
-            #     coef,_ = pywt.cwt(full_data[i], scales , waveletType, method = 'conv')
-
-            #     for j in range(Epochs_data.shape[0]):
-                    
-            #         sig_cwt,_ = pywt.cwt(Epochs_data[j][i], scales , waveletType,method = 'conv')
-            #         if Label_data[j][i] == 1:
-            #             #print(1)
-            #             plt.imshow(sig_cwt, extent=[1, 31, 31, 1], cmap='nipy_spectral', vmax=abs(coef).max(), vmin=-abs(coef).max())
-            #             plt.axis('off')
-            #             plt.savefig(fname = main_path + waveletType  + '/' + split + '/' + dest_list[1] + '/' + 'img_' + str(j) + '_' + str(i) + '_' + str(file_num) + '.png', bbox_inches = 'tight')
-            #             plt.close()
-
-            #         elif Label_data[j][i] == 2:
-            #             #print(4)
-            #             plt.imshow(sig_cwt, extent=[1, 31, 31, 1], cmap='nipy_spectral', vmax=abs(coef).max(), vmin=-abs(coef).max())
-            #             plt.axis('off')
-            #             plt.savefig(fname = main_path + waveletType  + '/' + split + '/' + dest_list[2] + '/' + 'img_' + str(j) + '_' + str(i) + '_' + str(file_num) + '.png', bbox_inches = 'tight')
-            #             plt.close()
-                    
-            #         else:
-                        
-            #             if j % 20 == 0:
-            #                 plt.imshow(sig_cwt, extent=[1, 31, 31, 1], cmap='nipy_spectral', vmax=abs(coef).max(), vmin=-abs(coef).max())
-            #                 plt.axis('off')
-            #                 plt.savefig(fname = main_path + waveletType  + '/' + split + '/' + dest_list[0] + '/' + 'img_' + str(j) + '_' + str(i) + '_' + str(file_num) + '.png', bbox_inches = 'tight')
-            #                 plt.close()
-            #     te = time.time()
-            #     print(te-ts)
-
-            # shutil.move(csvdir + '/'+str(file_num) + '.csv',done_folder +str(file_num)+'.csv')
-            # print('Moving CSV file to done folder')
-
             collected = gc.collect()
             print('Gc collect',collected)
 
@@ -235,7 +200,7 @@ for waveletType in waveletsTypes:
 
         print('Going now Normal with wavelet type', waveletType)
         random.seed(444)     #Make sure the seed is same to get similar results
-        window_num = 300     #Define the number of windows you want per normal file
+        window_num = 150     #Define the number of windows you want per normal file
         '''
         This is done to downsample from the large amount of normal data present. This is done to mitigate the data imbalance
         You can get the total number of normal windows(images) produced = window_num * no of files. 
