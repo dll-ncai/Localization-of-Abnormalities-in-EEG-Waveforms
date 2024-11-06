@@ -5,7 +5,7 @@
 * [Dataset](#dataset)
 * [Citation](#citation)
 
-This repository contains the source code for 'NeuroAssist: Open-Source Automatic Event Detection in Scalp EEG' using data from **"NUST-MH-TUKL EEG"** of the year 2020. The study compares the performance of state-of-the-art machine learning and deep learning algorithms on the task of EEG abnormality localization on the **"NMT-Events"** dataset. The details of our research on localizing abnormalities in EEG data can be found in the following paper:
+This repository contains the source code for 'NeuroAssist: Open-Source Automatic Event Detection in Scalp EEG' using data from **"NUST-MH-TUKL EEG"**. The study compares the performance of state-of-the-art machine learning and deep learning algorithms on the task of EEG abnormality localization on the **"NMT-Events"** dataset. The details of our research on localizing abnormalities in EEG data can be found in the following paper:
 
 * Muhammad Ali Alqarni, Hira Masood, Adil Jowad Qureshi, Muiz Alvi, Haziq Arbab, Hassan Aqeel Khan, Awais Mehmood Kamboh, Saima Shafait, and Faisal Shafait (2024) * **"NeuroAssist: Open-Source Automatic Event Detection in Scalp EEG",** IEEE Access. doi: (_____)
 
