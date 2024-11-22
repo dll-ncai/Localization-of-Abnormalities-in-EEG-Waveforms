@@ -1,32 +1,21 @@
 import numpy as np
-from PIL import Image
-import itertools
-import os
-import shutil
-import random
-import glob
 import math
 import matplotlib.pyplot as plt
 import pandas as pd
-import mne
-import pywt
-from tqdm import tqdm
+
 import gc
 plt.rcParams['figure.dpi'] = 100
 plt.rcParams['figure.figsize'] = [224/100,224/100]
 
 '''
-
 This file contains functions used to extract windows from EDF files and labels from CSV files.
 extractlabels function iterates over CSV files to extract the labels and time stamps of the present abnormalities.
 cleanlabels function classifies each label into a super class of labels
 generatelabelarray creates a label array of the same dimensions as the EEG data
 
-
 EDF Files are read and are used to extract the EEG data. 
 The data is split in to windows(epochs) of 2 seconds (400 samples) with 1 second overlap
 Each window is labeled as abnormal if atleast 25% of abnormality is present in it
-
 '''
 
 
@@ -70,17 +59,39 @@ def extractlabels(name, csvdir):
   return type, channels, beg, end
 
 ############################################################################################################
-
 def cleanlabels(labels):
-  label_dict = [['No Comment', 'delete previous', 'nan', 'Normal'], ['sharp waves', 'sharp wave', 'Sharp Wave'], ['delta slow waves','delta waves', 'delta slow waves', 'sharp and delta slow waves', 'sharp and slow waves', 'sharp and slow wave', 'sharp and slow wave ','slowing wave', 'sharp and slow waves','sharp and slow wave','generalized paroxysmal delta slow waves', 'generalized delta slow waves', 'delta slow wave', 'slow waves', 'generalized delta slow waves ', 'paroxysmal delta slow waves', ' delta slow waves', 'delta waves', 'paroxysmal generalized delta slow waves', 'paroxysmal generalized deta slow waves','Delta ','sharp and delta slow waves', 'Delta Slow Wave'], ['2 hertz slow spike and wave discharge','spike wave','spikes','polypspikes and wave','polyspikes and wave', 'generalized paroxysmal spike and wave discharge', 'fragmented spike and wave discharge', 'generalized paroxysmal 3 hertz spike and wave discharge', 'generalized paroxysmal  spike and wave discharge', 'generalized spike and wave discharge', 'generalized 4 hertz spike and wave discharge', 'spike and wave', 'spike and wave discharge', 'generalized 3 hertz spike and wave discharge', 'generalized 2 hertz spike and wave discharge', 'spike and waves', '3 hertz fragmented spike and wave discharge', 'generalized spike and wave ', 'generalized spike and wave', 'spike and wave ', 'polyspikes discharge', 'Generalized  paroxysmal 4 hertz spike and wave discharge', 'generalized 3.5 hertz spike and wave discharge', 'Generalized 3 hertz spike and wave discharge', 'Generalized 2 hertz spike and wave discharge', '3 hertz spike and wave discharge', ' 3 hertz spike and wave discharge', 'Generalized spike and wave discharge', 'paroxysmal generalized 3.5 spike and wave discharge', 'paroxysmal generalized 3.5 hertz spike and wave discharge', ' spike and wave discharge', 'generalized spike  and wave discharge', 'generalized  3 hertz spike and wave discharge', 'generalized  spike and wave discharge', 'generalized 3 hertz  spike and wave discharge', 'spike an dwave', 'spike', 'Paroxysmal generalized 3 hertz spike and wave discharge', 'paroxysmal generalized spike and wave discharge', 'polyspikes', 'paroxysmal generalized 3 hertz spike and wave discharge', ' generalized spike and wave discharge', 'generalized polyspike discharge', 'generalized polyspikes discharge', 'paroxysmal generalized 4 hertz spike and wave discharge', 'rolandic spike', 'generalized paroxysmal 3.5 spike and wave discharge', 'spike and wave discharge 3 hertz', 'fragemented spike and wave discharge', 'fragmented 3 hertz spike and wave discharge', 'generalized  2 hertz spike and wave discharge', 'generalized 2 hertz  spike and wave discharge', 'parosysmal generalized 3 hertz spike and wave discharge', 'spiek and wave', 'generalized 2.5 hertz spike and wave discharge' ,'sharp wave', 'sharp waves','spike and wave', 'spike and wave ','polyspikes and wave', 'polyspikes ', 'polyspikes', 'spikes', 'polypspikes and wave', 'spike wave', 'spike and wave','polyspikes ','Spike and Wave Discharge'], ['Beta waves', 'beta waves', 'Beta Wave'], ['theta waves', 'Theta Wave'], ['triphasic waves', 'Triphasic Wave'], ['low voltage','no waveform', 'Low Voltage']]
+  label_dict = [['No Comment', 'delete previous', 'nan',"Unknown", 'Normal'],
+                ['sharp waves', 'sharp wave', 'generalized sharp waves','generalized sharp waves discharge', 'Sharp Wave'],
+                ['delta slow wave','delta waves', 'delta slow waves', 'sharp and delta slow waves', 'sharp and delta waves','sharp and delta wave', 'sharp and slow waves', 
+                'sharp and slow wave', 'sharp and slow wave','slowing wave', 'sharp and slow waves','sharp and slow wave','generalized paroxymal delta slow waves',
+                'generalized paroxysmal delta slow waves','generalized parosysmal delta slow waves', 'generalized delta slow waves', 'slow waves', 
+                'generalized delta slow waves ', 'paroxysmal delta slow waves', ' delta slow waves', 'delta waves', 'paroxysmal generalized delta slow waves', 
+                'paroxysmal generalized deta slow waves','Delta ','sharp and delta slow waves', 'Delta Slow Wave'],
+                ['2 hertz slow spike and wave discharge','spike wave','spikes','polypspikes and wave','polyspike and wave','polyspikes and wave', 'generalized paroxysmal spike and wave discharge','generalized paroxymal spike and wave discharge', 'fragmented spike and wave discharge', 'generalized paroxysmal 3 hertz spike and wave discharge', 'generalized paroxysmal  spike and wave discharge', 'generalized spike and wave discharge','generalized spike and wave discharges', 'generalized 4 hertz spike and wave discharge', 'spike and wave', 'spike and wave discharge','Generalized 3 hertz spike and wave', 'generalized 3 hertz spike and wave discharge','generalized 3 hertz spike and wave activity', 'generalized 2 hertz spike and wave discharge','generalized 2 hertz spike and wave','2 hertz spike and wave discharge', 'spike and waves', '3 hertz fragmented spike and wave discharge', 'generalized spike and wave ', 'generalized spike and wave', 'generalized spike and wave activity','spike and wave ', 'polyspikes discharge', 'Generalized  paroxysmal 4 hertz spike and wave discharge', 'generalized 3.5 hertz spike and wave discharge', 'generalized 3 hertz spike and wave discharges', 'generalized 2 hertz spike and wave discharges', '3 hertz spike and wave discharge', ' 3 hertz spike and wave discharge', 'paroxysmal generalized 3.5 spike and wave discharge', 'paroxysmal generalized 3.5 hertz spike and wave discharge', ' spike and wave discharge', 'generalized spike  and wave discharge', 'generalized  3 hertz spike and wave discharge', 'generalized  spike and wave discharge', 'generalized 3 hertz  spike and wave discharge', 'spike an dwave', 'spike', 'Paroxysmal generalized 3 hertz spike and wave discharge', 'paroxysmal generalized spike and wave discharge', 'polyspikes', 'paroxysmal generalized 3 hertz spike and wave discharge', 'generalized polyspike discharge', 'generalized polyspikes discharge', 'paroxysmal generalized 4 hertz spike and wave discharge', 'rolandic spike','rolandic spikes', 'generalized paroxysmal 3.5 spike and wave discharge', 'spike and wave discharge 3 hertz', 'fragemented spike and wave discharge', 'fragmented 3 hertz spike and wave discharge', 'generalized  2 hertz spike and wave discharge', 'generalized 2 hertz  spike and wave discharge', 'parosysmal generalized 3 hertz spike and wave discharge', 'spiek and wave', 'generalized 2.5 hertz spike and wave discharge','polyspikes and wave', 'polyspikes ', 'polyspikes', 
+                 'spikes', 'polypspikes and wave', 'spike wave','polyspikes ','Spike and Wave Discharge'],
+                ['Beta waves', 'beta waves', 'Beta Wave'],
+                ['theta waves', 'Theta Wave'],
+                ['triphasic waves', 'Triphasic Wave'],
+                ['burst suppression','Burst Suppression'],
+                ['low voltage','no waveform', 'Low Voltage']]
   ret = []
   for i in range(len(labels)):
+    flag = 0
     for j in range(len(label_dict)):
       for k in range(len(label_dict[j])):
-        if label_dict[j][k] == labels[i]:
+        # print(labels[i])
+        if label_dict[j][k].lower().strip() == labels[i].lower().strip():
           labels[i] = label_dict[j][-1]
           ret.append(label_dict[j][-1])
+          flag = 1
+          break
+      if flag == 1:
+        break
+    if flag == 0:
+      print("Not found",labels[i])
+
   if len(ret) != len(labels):
+    print(labels)
     print("Did not catch all labels. Please check")
     return labels
   else:
@@ -114,11 +125,8 @@ def generatewindows(data, labels, beg, end, windowsize = 2, min_ab_threshold = 0
     for j in range(data.shape[0]):
       windows[-1].append(data[j][i*nsamples:(i+1)*nsamples])
       windowlabel[-1].append("Normal")
-  print(np.shape(windowlabel))
-  #for labels which are larger than file
   windowlabel = np.array(windowlabel)
   new_end = np.delete(end,np.argwhere(end/nsamples >= windowlabel.shape[0]-1))
-  print('Warning:Delete lables :',(len(end)-len(new_end)))
   new_beg = beg[0:len(new_end)]
   windowlabel = windowlabel.tolist()
   #broadcasting labels
@@ -128,23 +136,16 @@ def generatewindows(data, labels, beg, end, windowsize = 2, min_ab_threshold = 0
       window_index_beg = int(window_index_beg)
     else:
       window_index_beg = math.ceil(window_index_beg)
-    #print(window_index_beg)
     windowlabel[window_index_beg] = labels[j]
     window_index_end = new_end[j]/nsamples
     if window_index_end % 1 > min_ab_threshold:
       window_index_end = math.ceil(window_index_end)
     else: 
       window_index_end = int(window_index_end)
-    #print('length of window label', len(windowlabel[window_index_end]))
-    #print('length of    labels[j]',len(labels[j]))
     windowlabel[window_index_end] = labels[j]
     net_window = window_index_end - window_index_beg
-    #print('Window Diffrence :',net_window)
     for i in range(int(net_window)):
       windowlabel[window_index_beg + i] = labels[j]
-    #print('labels are:',windowlabel[window_index_end])
-    #except:
-      #print(int(end[j]/nsamples), j)
   return windows, windowlabel
 
 ############################################################################################################
@@ -164,9 +165,7 @@ def sample_labeling(data,labels,beg,end):           #For assigning each sample a
     for j in range(data.shape[0]):
       sample_label[-1].append("Normal")
   sample_label = np.array(sample_label)
-  print(np.shape(sample_label))
   new_end = np.delete(end,np.argwhere(end >= sample_label.shape[0]))
-  print('Warning:Delete lables :',(len(end)-len(new_end)))
   new_beg = beg[0:len(new_end)]
   sample_label = sample_label.tolist()
   for k in range(len(new_beg)):
@@ -191,12 +190,9 @@ def epoch_windowing(epochs_labels, threshold_val = 25):      #threshold is in pe
         label_array[-1].append(ab_type)
       else:
         label_array[-1].append(0)
-
-  print(np.unique(label_array))
   label_array = np.array(label_array, dtype = int)
   label_array = np.transpose(label_array)
   
-  print('Shape of Label Epochs:', label_array.shape)   #(no of epochs, channels)
   return label_array
 
 ############################################################################################################
